@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-account-config
+
+data:
+  secret.json: |
+    ## paste service account key
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: random-namespace-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: my-namespace
+    spec:
+      containers:
+        - name: my-namespace-container
+          image: gcr.io/aretecinc-public/disearch/namespace:v1
+          volumeMounts:
+            - name: config-volume
+              mountPath: /workspace/secret.json
+              subPath: secret.json
+              readOnly: true
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /workspace/secret.json
+      volumes:
+        - name: config-volume
+          configMap:
+            name: service-account-config
+      serviceAccountName: gke-sa
+      restartPolicy: Never
+  backoffLimit: 2
+
+
+
