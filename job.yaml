@@ -5,7 +5,7 @@ metadata:
 
 data:
   secret.json: |
-    ## paste service account key.
+    ## paste service account key which helps on authenticated google cloud.
 
 ---
 
